@@ -1,0 +1,212 @@
+#include <iostream>
+
+class Element {
+public:
+    int data;
+    Element* nextNode;
+    Element* previousNode;
+
+    Element(int number)
+        : data(number), nextNode(nullptr), previousNode(nullptr) {}
+
+    Element* getNext() {
+        return nextNode;
+    }
+
+    Element* getPrevious() {
+        return previousNode;
+    }
+};
+
+class DoublyList {
+private:
+    Element* head;
+    Element* tail;
+
+public:
+    DoublyList() : head(nullptr), tail(nullptr) {}
+
+    ~DoublyList() {
+        Element* current = head;
+
+        while (current != nullptr) {
+            Element* temp = current->nextNode;
+            delete current;
+            current = temp;
+        }
+    }
+
+    Element* begin() {
+        return head;
+    }
+
+    Element* end() {
+        return tail;
+    }
+
+    void insert(Element* position, int number) {
+        if (position == nullptr) {
+            push_back(number);
+            return;
+        }
+
+        Element* newElement = new Element(number);
+
+        newElement->nextNode = position->nextNode;
+        newElement->previousNode = position;
+
+        if (position->nextNode != nullptr)
+            position->nextNode->previousNode = newElement;
+        else
+            tail = newElement;
+
+        position->nextNode = newElement;
+    }
+
+    void erase(Element* element) {
+        if (element == nullptr)
+            return;
+
+        if (element == head) {
+            pop_front();
+            return;
+        }
+
+        if (element == tail) {
+            pop_back();
+            return;
+        }
+
+        element->previousNode->nextNode = element->nextNode;
+        element->nextNode->previousNode = element->previousNode;
+
+        delete element;
+    }
+
+    void push_back(int number) {
+        Element* newElement = new Element(number);
+
+        if (head == nullptr) {
+            head = newElement;
+            tail = newElement;
+        }
+        else {
+            tail->nextNode = newElement;
+            newElement->previousNode = tail;
+            tail = newElement;
+        }
+    }
+
+    void push_front(int number) {
+        Element* newElement = new Element(number);
+
+        if (head == nullptr) {
+            head = newElement;
+            tail = newElement;
+        }
+        else {
+            newElement->nextNode = head;
+            head->previousNode = newElement;
+            head = newElement;
+        }
+    }
+
+    void pop_front() {
+        if (head == nullptr)
+            return;
+
+        Element* temp = head;
+        head = head->nextNode;
+
+        if (head != nullptr)
+            head->previousNode = nullptr;
+        else
+            tail = nullptr;
+
+        delete temp;
+    }
+
+    void pop_back() {
+        if (tail == nullptr)
+            return;
+
+        Element* temp = tail;
+        tail = tail->previousNode;
+
+        if (tail != nullptr)
+            tail->nextNode = nullptr;
+        else
+            head = nullptr;
+
+        delete temp;
+    }
+
+    void displayForward() {
+        Element* current = head;
+
+        while (current != nullptr) {
+            std::cout << current->data << std::endl;
+            current = current->nextNode;
+        }
+    }
+
+    void displayBackward() {
+        Element* current = tail;
+
+        while (current != nullptr) {
+            std::cout << current->data << std::endl;
+            current = current->previousNode;
+        }
+    }
+
+    int size() {
+        int count = 0;
+        Element* current = head;
+
+        while (current != nullptr) {
+            count++;
+            current = current->nextNode;
+        }
+
+        return count;
+    }
+};
+
+int main() {
+    DoublyList myList;
+
+    myList.push_back(10);
+    myList.push_back(20);
+    myList.push_back(30);
+
+    std::cout << "\nForward direction:\n";
+    myList.displayForward();
+
+    std::cout << "\nBackward direction:\n";
+    myList.displayBackward();
+
+    myList.push_front(5);
+
+    std::cout << "\nAfter adding at the beginning:\n";
+    myList.displayForward();
+
+    Element* firstElement = myList.begin();
+    myList.insert(firstElement, 7);
+
+    std::cout << "\nAfter inserting an element:\n";
+    myList.displayForward();
+
+    std::cout << "\nRemoving the last element:\n";
+    Element* lastElement = myList.end();
+    myList.erase(lastElement);
+    myList.displayForward();
+
+    std::cout << "\nRemoving head and tail:\n";
+    myList.pop_front();
+    myList.pop_back();
+    myList.displayForward();
+
+    std::cout << "\nList size: " << myList.size() << std::endl;
+
+    return 0;
+}

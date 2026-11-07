@@ -1,0 +1,45 @@
+#include <iostream>
+using namespace std;
+
+class MyPointer {
+private:
+    int* address;
+
+public:
+    MyPointer(int number) {
+        address = new int(number);
+    }
+
+    int* getPointer() {
+        return address;
+    }
+
+    void reset(int* newAddress = nullptr) {
+        if (address != nullptr) {
+            delete address;
+        }
+        address = newAddress;
+    }
+
+    ~MyPointer() {
+        delete address;
+    }
+};
+
+int main() {
+    MyPointer first(7);
+
+    cout << *first.getPointer() << endl;
+
+    first.reset(new int(3));
+
+    cout << *first.getPointer() << endl;
+
+    first.reset();
+
+    if (first.getPointer() == nullptr) {
+        cout << "Pointer is empty" << endl;
+    }
+
+    return 0;
+}
